@@ -1,1 +1,116 @@
 
+const API='/api/contacts';
+
+async function loadContacts(){
+
+ const response=await fetch(API);
+
+ const data=await response.json();
+
+ display(data);
+
+}
+
+async function addContact(){
+
+ const name=document.getElementById('name').value;
+
+ const email=document.getElementById('email').value;
+
+ const phone=document.getElementById('phone').value;
+
+ await fetch(API,{
+
+ method:'POST',
+
+ headers:{
+
+ 'Content-Type':'application/json'
+
+ },
+
+ body:JSON.stringify({
+
+ name,
+
+ email,
+
+ phone
+
+ })
+
+ });
+
+ loadContacts();
+
+}
+
+function display(data){
+
+ let output='';
+
+ data.forEach(contact=>{
+
+ output+=`
+
+ <div class="contact">
+
+ <h3>${contact.name}</h3>
+
+ <p>${contact.email}</p>
+
+ <p>${contact.phone}</p>
+
+ <button onclick="deleteContact('${contact._id}')">
+
+ Delete
+
+ </button>
+
+ </div>
+
+ `;
+
+ });
+
+ document.getElementById('contacts').innerHTML=output;
+
+}
+
+async function deleteContact(id){
+
+ await fetch(API+'/'+id,{
+
+ method:'DELETE'
+
+ });
+
+ loadContacts();
+
+}
+
+async function searchContact(){
+
+ const value=document
+
+ .getElementById('search')
+
+ .value
+
+ .toLowerCase();
+
+ const response=await fetch(API);
+
+ const data=await response.json();
+
+ const filtered=data.filter(c=>
+
+ c.name.toLowerCase().includes(value)
+
+ );
+
+ display(filtered);
+
+}
+
+loadContacts();
